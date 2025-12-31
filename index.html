@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DSA Chatbot | Gemini</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron&family=Poppins&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      color: white;
+    }
+
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100%;
+    }
+
+    .chat-header {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.8rem;
+      padding: 20px;
+      background: linear-gradient(90deg, #00dbde, #fc00ff);
+      text-align: center;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      padding: 10px 20px;
+      background-color: rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .toolbar button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .toolbar button:hover {
+      opacity: 0.9;
+    }
+
+    .chat-window {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .message {
+      margin: 10px 0;
+      padding: 12px 18px;
+      border-radius: 16px;
+      max-width: 80%;
+      animation: fadeIn 0.3s ease;
+      white-space: pre-wrap;
+    }
+
+    .user-message {
+      background: linear-gradient(135deg, #833ab4, #fd1d1d);
+      align-self: flex-end;
+    }
+
+    .bot-message {
+      background: linear-gradient(135deg, #2193b0, #6dd5ed);
+      align-self: flex-start;
+    }
+
+    .chat-input-area {
+      display: flex;
+      padding: 16px;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    #user-input {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      background: #1e1e2f;
+      color: white;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    #send-btn {
+      margin-left: 12px;
+      padding: 12px 18px;
+      background: linear-gradient(to right, #fc466b, #3f5efb);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #555;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">💬 DSA Chatbot</div>
+
+    <div class="toolbar">
+      <button onclick="showHistory()">📜 History</button>
+      <button onclick="clearChat()">🧹 Clear</button>
+      <button onclick="alert('Coming soon!')">⚙️ Settings</button>
+    </div>
+
+    <div id="chat-window" class="chat-window"></div>
+
+    <div class="chat-input-area">
+      <input type="text" id="user-input" placeholder="Ask a DSA question..." />
+      <button id="send-btn">🚀</button>
+    </div>
+  </div>
+
+  <script>
+    const API_KEY = "AIzaSyClq02drA_kJCZ_oaVBCe98eh8jCuatNjI"; // Replace this
+    const systemPrompt = `
+      You are a DSA instructor. Only respond to Data Structures and Algorithm questions.
+      Give answers in bullet points (• or numbered 1. 2. 3.).
+      If the user asks non-DSA questions, respond rudely and tell user to ask about dsa questions.
+    `;
+
+    const chatWindow = document.getElementById("chat-window");
+    const sendBtn = document.getElementById("send-btn");
+    const userInput = document.getElementById("user-input");
+
+    let chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
+
+    function addMessage(text, isUser = false) {
+      const msg = document.createElement("div");
+      msg.className = `message ${isUser ? "user-message" : "bot-message"}`;
+      msg.textContent = text;
+      chatWindow.appendChild(msg);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    async function getGeminiResponse(message) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
+
+      const body = {
+        contents: [
+          { role: "user", parts: [{ text: message }] }
+        ],
+        systemInstruction: {
+          role: "system",
+          parts: [{ text: systemPrompt }]
+        }
+      };
+
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+
+      const data = await res.json();
+      return data?.candidates?.[0]?.content?.parts?.[0]?.text || "⚠️ Gemini error.";
+    }
+
+    async function handleSend() {
+      const message = userInput.value.trim();
+      if (!message) return;
+
+      addMessage(message, true);
+      userInput.value = "";
+      chatHistory.push({ role: "user", content: message });
+      saveHistory();
+
+      const typing = document.createElement("div");
+      typing.className = "message bot-message";
+      typing.textContent = "Typing...";
+      chatWindow.appendChild(typing);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+
+      const response = await getGeminiResponse(message);
+      typing.remove();
+      addMessage(response, false);
+      chatHistory.push({ role: "bot", content: response });
+      saveHistory();
+    }
+
+    function saveHistory() {
+      localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
+    }
+
+    function showHistory() {
+      if (chatHistory.length === 0) {
+        alert("No history found.");
+        return;
+      }
+
+      chatWindow.innerHTML = "";
+      chatHistory.forEach(entry => {
+        addMessage(entry.content, entry.role === "user");
+      });
+    }
+
+    function clearChat() {
+      chatWindow.innerHTML = "";
+    }
+
+    sendBtn.addEventListener("click", handleSend);
+    userInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") handleSend();
+    });
+  </script>
+</body>
+</html>
