@@ -1,6 +1,8 @@
 import { GoogleGenAI } from "@google/genai";
+import "dotenv/config";
 
-const ai = new GoogleGenAI({ apiKey: "AIzaSyB6sj43g15wgHz2a1kGcvrH6NIh7yQKtbw" });
+
+const ai = new GoogleGenAI({ apiKey : Process.env.apiKey });
 
 async function main() {
   const response = await ai.models.generateContent({
