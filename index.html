@@ -2,194 +2,409 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>DSA Chatbot | Gemini</title>
+  <title>DSA Architect | AI Tutor</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Markdown Renderer -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- Syntax Highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron&family=Poppins&display=swap');
+    :root {
+      --bg-dark: #080a0f;
+      --panel-bg: rgba(17, 25, 40, 0.75);
+      --accent-primary: #3b82f6;
+      --accent-secondary: #8b5cf6;
+      --text-main: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border-color: rgba(255, 255, 255, 0.1);
+      --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
 
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
     }
 
-    body, html {
-      width: 100%;
-      height: 100%;
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-      color: white;
-    }
-
-    .chat-container {
-      display: flex;
-      flex-direction: column;
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.05) 0%, transparent 40%);
+      color: var(--text-main);
       height: 100vh;
-      width: 100%;
-    }
-
-    .chat-header {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.8rem;
-      padding: 20px;
-      background: linear-gradient(90deg, #00dbde, #fc00ff);
-      text-align: center;
-    }
-
-    .toolbar {
-      display: flex;
-      gap: 10px;
-      padding: 10px 20px;
-      background-color: rgba(255, 255, 255, 0.08);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .toolbar button {
-      padding: 10px 16px;
-      border: none;
-      border-radius: 8px;
-      background: linear-gradient(to right, #00c6ff, #0072ff);
-      color: white;
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-
-    .toolbar button:hover {
-      opacity: 0.9;
-    }
-
-    .chat-window {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
     }
 
-    .message {
-      margin: 10px 0;
-      padding: 12px 18px;
-      border-radius: 16px;
-      max-width: 80%;
-      animation: fadeIn 0.3s ease;
-      white-space: pre-wrap;
-    }
-
-    .user-message {
-      background: linear-gradient(135deg, #833ab4, #fd1d1d);
-      align-self: flex-end;
-    }
-
-    .bot-message {
-      background: linear-gradient(135deg, #2193b0, #6dd5ed);
-      align-self: flex-start;
-    }
-
-    .chat-input-area {
+    /* Header */
+    header {
       display: flex;
-      padding: 16px;
-      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: rgba(8, 10, 15, 0.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      z-index: 100;
     }
 
-    #user-input {
-      flex: 1;
-      padding: 12px;
-      border-radius: 12px;
-      border: none;
-      background: #1e1e2f;
-      color: white;
-      font-size: 1rem;
-      outline: none;
+    .logo {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(to right, #60a5fa, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    #send-btn {
-      margin-left: 12px;
-      padding: 12px 18px;
-      background: linear-gradient(to right, #fc466b, #3f5efb);
-      border: none;
-      border-radius: 12px;
-      color: white;
-      font-size: 1.1rem;
+    .logo i {
+      font-size: 1.2rem;
+      -webkit-text-fill-color: white;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    button.btn-icon {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: 8px;
       cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(5px); }
+    button.btn-icon:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--accent-primary);
+      transform: translateY(-1px);
+    }
+
+    /* Chat Container */
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      padding: 2rem;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .chat-wrapper {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      background: var(--panel-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      box-shadow: var(--glass-shadow);
+      position: relative;
+    }
+
+    #chat-window {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Custom Scrollbar */
+    #chat-window::-webkit-scrollbar {
+      width: 6px;
+    }
+    #chat-window::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    #chat-window::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+
+    /* Messages */
+    .message {
+      max-width: 85%;
+      padding: 1.25rem 1.5rem;
+      border-radius: 20px;
+      line-height: 1.6;
+      font-size: 0.95rem;
+      position: relative;
+      animation: messageSlide 0.3s ease-out;
+    }
+
+    @keyframes messageSlide {
+      from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    ::-webkit-scrollbar {
-      width: 6px;
+    .user-message {
+      align-self: flex-end;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: white;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2);
     }
 
-    ::-webkit-scrollbar-thumb {
-      background: #555;
-      border-radius: 6px;
+    .bot-message {
+      align-self: flex-start;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-bottom-left-radius: 4px;
+    }
+
+    .bot-message code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+
+    .bot-message pre {
+      background: rgba(0, 0, 0, 0.3) !important;
+      padding: 1rem;
+      border-radius: 12px;
+      margin: 1rem 0;
+      overflow-x: auto;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .bot-message h1, .bot-message h2, .bot-message h3 {
+      font-family: 'Outfit', sans-serif;
+      margin: 1.5rem 0 0.75rem 0;
+      color: var(--accent-primary);
+    }
+
+    .bot-message p {
+      margin-bottom: 1rem;
+    }
+
+    .bot-message ul, .bot-message ol {
+      margin-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Input Area */
+    .input-wrapper {
+      padding: 1.5rem 2rem;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      gap: 1rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-bottom-left-radius: 24px;
+      border-bottom-right-radius: 24px;
+    }
+
+    .input-container {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    #user-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 14px 20px;
+      border-radius: 14px;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    #user-input:focus {
+      border-color: var(--accent-primary);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+
+    #send-btn {
+      background: var(--accent-primary);
+      color: white;
+      border: none;
+      padding: 0 24px;
+      border-radius: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #send-btn:hover {
+      background: #2563eb;
+      transform: scale(1.02);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    #send-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Typing Indicator */
+    .typing {
+      display: flex;
+      gap: 4px;
+      padding: 8px 0;
+    }
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--text-muted);
+      border-radius: 50%;
+      animation: typingPulse 1.4s infinite ease-in-out;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typingPulse {
+      0%, 100% { transform: translateY(0); opacity: 0.4; }
+      50% { transform: translateY(-4px); opacity: 1; }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      main { padding: 1rem; }
+      .message { max-width: 95%; }
+      .header-actions button span { display: none; }
     }
   </style>
 </head>
 <body>
-  <div class="chat-container">
-    <div class="chat-header">💬 DSA Chatbot</div>
-
-    <div class="toolbar">
-      <button onclick="showHistory()">📜 History</button>
-      <button onclick="clearChat()">🧹 Clear</button>
-      <button onclick="alert('Coming soon!')">⚙️ Settings</button>
+  <header>
+    <div class="logo">
+      <span>💠</span>
+      DSA Architect
     </div>
-
-    <div id="chat-window" class="chat-window"></div>
-
-    <div class="chat-input-area">
-      <input type="text" id="user-input" placeholder="Ask a DSA question..." />
-      <button id="send-btn">🚀</button>
+    <div class="header-actions">
+      <button class="btn-icon" onclick="clearChat()">
+        <span>🧹 Clear</span>
+      </button>
+      <button class="btn-icon" onclick="showHistory()">
+        <span>📜 History</span>
+      </button>
     </div>
-  </div>
+  </header>
+
+  <main>
+    <div class="chat-wrapper">
+      <div id="chat-window">
+        <div class="message bot-message">
+          <h2 style="margin-top: 0;">Welcome, Architect.</h2>
+          <p>I am your specialized Data Structures and Algorithms tutor. How can I assist your learning today?</p>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Try asking about sorting algorithms, graph theory, or dynamic programming.</p>
+        </div>
+      </div>
+
+      <div class="input-wrapper">
+        <div class="input-container">
+          <input type="text" id="user-input" placeholder="Enter your query..." autocomplete="off" />
+        </div>
+        <button id="send-btn">
+          <span>Ask</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+      </div>
+    </div>
+  </main>
 
   <script>
-    const API_KEY = "AIzaSyA4OVN7H9Tqox-XJbkMAbP8QBnCpujlKl0"; // Replace this
-    const systemPrompt = `
-      You are a DSA instructor. Only respond to Data Structures and Algorithm questions.
-      Give answers in bullet points (• or numbered 1. 2. 3.).
-      If the user asks non-DSA questions, respond rudely and tell user to ask about dsa questions.
-    `;
-
     const chatWindow = document.getElementById("chat-window");
     const sendBtn = document.getElementById("send-btn");
     const userInput = document.getElementById("user-input");
 
     let chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
 
-    function addMessage(text, isUser = false) {
+    // Configure Markdown renderer
+    marked.setOptions({
+      highlight: function(code, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+          return hljs.highlight(code, { language: lang }).value;
+        }
+        return hljs.highlightAuto(code).value;
+      },
+      breaks: true
+    });
+
+    function addMessage(content, isUser = false) {
       const msg = document.createElement("div");
       msg.className = `message ${isUser ? "user-message" : "bot-message"}`;
-      msg.textContent = text;
+      
+      if (isUser) {
+        msg.textContent = content;
+      } else {
+        msg.innerHTML = marked.parse(content);
+        // Trigger highlight.js for any code blocks
+        msg.querySelectorAll('pre code').forEach((block) => {
+          hljs.highlightElement(block);
+        });
+      }
+      
       chatWindow.appendChild(msg);
       chatWindow.scrollTop = chatWindow.scrollHeight;
     }
 
+    function showTypingIndicator() {
+      const indicator = document.createElement("div");
+      indicator.id = "typing-indicator";
+      indicator.className = "message bot-message";
+      indicator.innerHTML = `
+        <div class="typing">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+      `;
+      chatWindow.appendChild(indicator);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+      return indicator;
+    }
+
     async function getGeminiResponse(message) {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
+      try {
+        const res = await fetch('/api/chat', {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message, context: "" })
+        });
 
-      const body = {
-        contents: [
-          { role: "user", parts: [{ text: message }] }
-        ],
-        systemInstruction: {
-          role: "system",
-          parts: [{ text: systemPrompt }]
-        }
-      };
-
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
-      });
-
-      const data = await res.json();
-      return data?.candidates?.[0]?.content?.parts?.[0]?.text || "⚠️ Gemini error.";
+        const data = await res.json();
+        return data.text || "⚠️ An error occurred on the server.";
+      } catch (error) {
+        console.error("Chat error:", error);
+        return "⚠️ Failed to connect to the architect core.";
+      }
     }
 
     async function handleSend() {
@@ -201,14 +416,11 @@
       chatHistory.push({ role: "user", content: message });
       saveHistory();
 
-      const typing = document.createElement("div");
-      typing.className = "message bot-message";
-      typing.textContent = "Typing...";
-      chatWindow.appendChild(typing);
-      chatWindow.scrollTop = chatWindow.scrollHeight;
+      const typing = showTypingIndicator();
 
       const response = await getGeminiResponse(message);
       typing.remove();
+      
       addMessage(response, false);
       chatHistory.push({ role: "bot", content: response });
       saveHistory();
@@ -220,7 +432,7 @@
 
     function showHistory() {
       if (chatHistory.length === 0) {
-        alert("No history found.");
+        alert("Memory banks are empty.");
         return;
       }
 
@@ -231,7 +443,16 @@
     }
 
     function clearChat() {
-      chatWindow.innerHTML = "";
+      if(confirm("Purge conversation history?")) {
+        chatWindow.innerHTML = `
+          <div class="message bot-message">
+            <h2 style="margin-top: 0;">Session Reset.</h2>
+            <p>Awaiting your next command.</p>
+          </div>
+        `;
+        chatHistory = [];
+        saveHistory();
+      }
     }
 
     sendBtn.addEventListener("click", handleSend);

@@ -3,18 +3,12 @@ import "dotenv/config";
 
 const ai = new GoogleGenerativeAI(process.env.apiKey);
 
-async function main(question = "What is a Linked List?", retrieved_chunks = "A linked list is a linear data structure where elements are not stored at contiguous memory locations. The elements in a linked list are linked using pointers.") {
+async function test(question = "What is a Binary Search Tree?") {
   const model = ai.getGenerativeModel({
     model: "gemini-2.5-flash",
     systemInstruction: `You are an expert Data Structures and Algorithms tutor.
 
 Use the provided context to answer the question if available. If no context is provided or the answer is not found in the context, use your internal knowledge to provide a clear and helpful explanation.
-
-Context:
-${retrieved_chunks}
-
-User Question:
-${question}
 
 Instructions:
 
@@ -39,4 +33,4 @@ Instructions:
   }
 }
 
-main();
+test();
