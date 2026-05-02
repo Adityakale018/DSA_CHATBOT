@@ -1,8 +1,14 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+const apiKey = process.env.apiKey;
 
-const genAI = new GoogleGenerativeAI(process.env.apiKey);
-const model = genAI.getGenerativeModel({
-  model: "gemini-2.5-flash",
+export default async function handler(req, res) {
+  if (!apiKey) {
+    return res.status(500).json({ error: "API Key (apiKey) is missing in Vercel environment variables." });
+  }
+
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({
+    model: "gemini-2.5-flash",
   systemInstruction: `You are an expert Data Structures and Algorithms tutor.
 
 Use the provided context to answer the question if available. If no context is provided or the answer is not found in the context, use your internal knowledge to provide a clear and helpful explanation.
