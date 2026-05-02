@@ -4,6 +4,8 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 const apiKey = process.env.apiKey || process.env.API_KEY || process.env.GEMINI_API_KEY;
 
 export default async function handler(req, res) {
+  console.log("Chat API invoked. Method:", req.method);
+  console.log("API Key present:", !!apiKey);
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
