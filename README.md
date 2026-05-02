@@ -1,36 +1,59 @@
-# DSA Chatbot Deployment Guide
+# DSA Architect | AI Tutor 🤖
 
-This application is ready to be deployed to platforms like **Render**, **Railway**, or **Heroku**.
+An expert AI-powered chatbot designed to help you master Data Structures and Algorithms. Built using Google's Gemini API, it provides structured explanations, complexity analysis, and C++ code examples optimized for interview preparation.
 
-## Deployment Steps (Recommended: Render)
+## ✨ Features
+- **Expert DSA Tutor Persona**: Specialized answers for interview prep.
+- **Structured Responses**: Definitions, Approaches, and Complexity Analysis.
+- **Code Examples**: Clean C++ code for algorithms and data structures.
+- **Professional UI**: Glassmorphism-inspired "Architect" theme with Markdown support.
+- **Secure Architecture**: Express.js backend to protect API keys.
 
-1.  **Push to GitHub**:
-    *   Create a new repository on GitHub.
-    *   Initialize git locally: `git init`
-    *   Add files: `git add .`
-    *   Commit: `git commit -m "Initial commit"`
-    *   Link to GitHub: `git remote add origin <your-repo-url>`
-    *   Push: `git push -u origin main`
+## 🛠️ Tech Stack
+- **Frontend**: HTML5, CSS3 (Glassmorphism), JavaScript (ES6+)
+- **Backend**: Node.js, Express.js
+- **AI Engine**: Google Gemini API (@google/generative-ai)
+- **Formatting**: Marked.js (Markdown), Highlight.js (Syntax Highlighting)
 
-2.  **Connect to Render**:
-    *   Go to [Render.com](https://render.com/) and sign up.
-    *   Click **New +** and select **Web Service**.
-    *   Connect your GitHub repository.
-    *   Set the following settings:
-        *   **Environment**: `Node`
-        *   **Build Command**: `npm install`
-        *   **Start Command**: `node server.js`
+## 🚀 How to Run Locally
+1. **Clone the repository**:
+   ```bash
+   git clone <your-repo-url>
+   ```
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+3. **Configure Environment**:
+   Create a `.env` file in the root directory and add your Gemini API key:
+   ```env
+   apiKey=YOUR_GOOGLE_GEMINI_API_KEY
+   ```
+4. **Start the server**:
+   ```bash
+   node server.js
+   ```
+5. **Access the app**: Open `http://localhost:3000` in your browser.
 
-3.  **Set Environment Variables**:
-    *   In the Render dashboard, go to the **Environment** tab.
-    *   Add a new variable:
-        *   **Key**: `apiKey`
-        *   **Value**: `<Your-Google-Gemini-API-Key>`
+## 🌐 Deployment Guide (Recommended: Render)
 
-4.  **Deploy**:
-    *   Render will automatically deploy your app. Once finished, you will receive a public URL.
+1. **Push to GitHub**:
+   Ensure your code is committed and pushed to a GitHub repository.
+2. **Connect to Render**:
+   - Go to [Render.com](https://render.com/) and create a new **Web Service**.
+   - Connect your GitHub repository.
+3. **Configure Settings**:
+   - **Environment**: `Node`
+   - **Build Command**: `npm install`
+   - **Start Command**: `node server.js`
+4. **Set Environment Variables**:
+   In the Render dashboard, add a variable:
+   - **Key**: `apiKey`
+   - **Value**: `YOUR_ACTUAL_API_KEY`
 
-## Local Development
-- Run `npm install`
-- Create a `.env` file with `apiKey=YOUR_KEY`
-- Run `node server.js`
+## 🔒 Security
+- API keys are stored in a `.env` file and kept secure.
+- `.env` and `node_modules` are excluded from Git tracking via `.gitignore`.
+
+## 👤 Author
+**Aditya Kale**
