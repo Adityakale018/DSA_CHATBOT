@@ -399,11 +399,18 @@
           body: JSON.stringify({ message, context: "" })
         });
 
+        // Check if we received an HTML response (likely from Live Preview instead of the Node backend)
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("text/html")) {
+          console.error("Received HTML instead of JSON. The Node.js backend is probably not running.");
+          return "⚠️ Error: It looks like you're using VS Code Live Preview. Please run `npm start` in the terminal and open http://localhost:3000 instead.";
+        }
+
         const data = await res.json();
         return data.text || "⚠️ An error occurred on the server.";
       } catch (error) {
         console.error("Chat error:", error);
-        return "⚠️ Failed to connect to the architect core.";
+        return "⚠️ Failed to connect to the architect core. Make sure the Node.js server is running (`npm start`).";
       }
     }
 
