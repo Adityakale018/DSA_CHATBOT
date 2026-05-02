@@ -35,21 +35,21 @@ An expert AI-powered chatbot designed to help you master Data Structures and Alg
    ```
 5. **Access the app**: Open `http://localhost:3000` in your browser.
 
-## 🌐 Deployment Guide (Recommended: Render)
+## 🌐 Deployment Guide
 
-1. **Push to GitHub**:
-   Ensure your code is committed and pushed to a GitHub repository.
-2. **Connect to Render**:
-   - Go to [Render.com](https://render.com/) and create a new **Web Service**.
-   - Connect your GitHub repository.
-3. **Configure Settings**:
-   - **Environment**: `Node`
+### Option 1: Render (Recommended for persistent servers)
+1. **Push to GitHub**: Ensure your code is committed and pushed.
+2. **Connect to Render**: Create a new **Web Service**.
+3. **Configure**:
    - **Build Command**: `npm install`
    - **Start Command**: `node server.js`
-4. **Set Environment Variables**:
-   In the Render dashboard, add a variable:
-   - **Key**: `apiKey`
-   - **Value**: `YOUR_ACTUAL_API_KEY`
+4. **Environment Variables**: Add `apiKey` with your Gemini key.
+
+### Option 2: Vercel (Recommended for fast, serverless deployment)
+1. **Push to GitHub**: Ensure your code is committed and pushed.
+2. **Connect to Vercel**: Import your repository.
+3. **Automatic Setup**: Vercel will detect the `vercel.json` and `server.js`.
+4. **Environment Variables**: Go to Project Settings -> Environment Variables and add `apiKey`.
 
 ## 🔒 Security
 - API keys are stored in a `.env` file and kept secure.
@@ -57,3 +57,4 @@ An expert AI-powered chatbot designed to help you master Data Structures and Alg
 
 ## 👤 Author
 **Aditya Kale**
+
