@@ -1,32 +1,10 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-const apiKey = process.env.apiKey;
+
+// Check both apiKey and API_KEY to be safe
+const apiKey = process.env.apiKey || process.env.API_KEY || process.env.GEMINI_API_KEY;
 
 export default async function handler(req, res) {
-  if (!apiKey) {
-    return res.status(500).json({ error: "API Key (apiKey) is missing in Vercel environment variables." });
-  }
-
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash",
-  systemInstruction: `You are an expert Data Structures and Algorithms tutor.
-
-Use the provided context to answer the question if available. If no context is provided or the answer is not found in the context, use your internal knowledge to provide a clear and helpful explanation.
-
-Instructions:
-* Answer in clear steps
-* Use simple language
-* Include:
-  1. Definition
-  2. Approach
-  3. Time & Space Complexity
-  4. Example (if applicable)
-* If coding is needed, provide clean code (C++ preferred)
-* Keep answer structured for interview preparation`,
-});
-
-export default async function handler(req, res) {
-  // Set CORS headers for Vercel
+  // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -36,27 +14,45 @@ export default async function handler(req, res) {
   );
 
   if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+    return res.status(200).end();
   }
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  if (!apiKey) {
+    return res.status(500).json({ 
+      error: "API Key is missing.", 
+      message: "Please add 'apiKey' to your Vercel Environment Variables." 
+    });
+  }
+
   const { message, context } = req.body;
-  
   if (!message) {
     return res.status(400).json({ error: 'Message is required' });
   }
 
   try {
-    const prompt = `Context:\n${context || "No additional context provided."}\n\nUser Question:\n${message}`;
+    const genAI = new GoogleGenerativeAI(apiKey);
+    // Use gemini-1.5-flash which is the standard, stable model name
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      systemInstruction: `You are an expert Data Structures and Algorithms tutor.
+Use the provided context to answer the question if available. If no context is provided or the answer is not found in the context, use your internal knowledge.
+Include: 1. Definition, 2. Approach, 3. Complexity, 4. C++ Example.`,
+    });
+
+    const prompt = `Context:\n${context || "No context."}\n\nQuestion:\n${message}`;
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    res.status(200).json({ text: response.text() });
+    
+    return res.status(200).json({ text: response.text() });
   } catch (error) {
-    console.error("Error calling Gemini API:", error);
-    res.status(500).json({ error: "Failed to generate response", details: error.message });
+    console.error("Gemini Error:", error);
+    return res.status(500).json({ 
+      error: "Gemini API Error", 
+      details: error.message 
+    });
   }
 }
