@@ -39,7 +39,11 @@ app.post('/api/chat', async (req, res) => {
     res.json({ text: response.text() });
   } catch (error) {
     console.error("Error calling Gemini API:", error);
-    res.status(500).json({ error: "Failed to generate response" });
+    res.status(500).json({ 
+      error: "Failed to generate response", 
+      details: error.message,
+      suggestion: "Check if your API key is correct and has access to gemini-2.5-flash."
+    });
   }
 });
 

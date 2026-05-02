@@ -39,7 +39,7 @@ export default async function handler(req, res) {
     const genAI = new GoogleGenerativeAI(apiKey);
     // Use gemini-1.5-flash which is the standard, stable model name
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       systemInstruction: `You are an expert Data Structures and Algorithms tutor.
 Use the provided context to answer the question if available. If no context is provided or the answer is not found in the context, use your internal knowledge.
 Include: 1. Definition, 2. Approach, 3. Complexity, 4. C++ Example.`,
